@@ -1,0 +1,27 @@
+
+notes
+-----
+
+
+I have to sort of manually Skolemize some things:
+	[ Implies(D[i], Not(D[N[i]])) for i in range(n) ]
+	becomes
+	[ Implies(D[i], Implies(N[i] == j, Not(D[i]))) for i in range(n) for j in range(n) ]
+
+
+
+
+TODO
+----
+
+* crazy functions should return a tree of implications and ands, not a list
+- implement function for skolemizing meta-level functions (Implies, Not)
+	- even T and F should be used in this CPS way
+	- have a simple id-like build function to escape CPS
+
+* Need
+	- Versions of Obj-Lang ops that map ints to vars
+		! these can be complex without exploding variable count
+	- Versions of Obj-Lang ops that to CPS-style Term-building
+	- function to lift int to CPS
+	- function to build CPS to term
