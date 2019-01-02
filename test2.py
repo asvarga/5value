@@ -7,9 +7,10 @@ import math
 ########
 
 n = 5
+f = []
 
 NAMES = {}
-def name(x, n=None):
+def NAME(x, n=None):
 	if n: 
 		NAMES[x] = n
 		return x
@@ -19,33 +20,27 @@ def name(x, n=None):
 ### Variables ###
 
 # Implication: nxn-matrix of integer variables
-I = name(tuple( tuple( Int("%s->%s" % (i, j)) for j in range(n) ) for i in range(n) ), 'I')
+I = NAME(tuple( tuple( Int("%s->%s" % (i, j)) for j in range(n) ) for i in range(n) ), 'I')
 # Negation: n-vector of integer variables
-N = name(tuple( Int("-%s" % i) for i in range(n) ), 'N')
+N = NAME(tuple( Int("-%s" % i) for i in range(n) ), 'N')
 # Designated set: n-vector of bools
 D = BoolVector('D', n)
 
-### Formulas ###
-
-f = []
-
-def ind(vec, i):
-	veci = Int("%s[%s]" % (name(vec), i))
-	for j in range(len(vec)): 
-		f.append(Implies(i == j, veci == vec[j]))
-	return veci
-
-def ind2(vec, i, j):
-	vecij = Int("%s[%s][%s]" % (name(vec), i, j))
-	for k in range(len(vec)): 
-		for l in range(len(vec[k])):
-			f.append(Implies(And(i == k, j == l), vecij == vec[k][l]))
-	return vecij
+def NOT(x, name=None): 	  return ind(N, x, f=f, name=name or "-%s" % x)
+def IMP(x, y, name=None): return ind(I, x, y, f=f, name=name or "(%s->%s)" % (x, y))
+def OR(x, y, name=None):  return IMP(IMP(p, q), q, name=name or "(%s||%s)" % (x, y))
+def AND(x, y, name=None): return NOT(OR(NOT(x), NOT(y)), name=name or "(%s&&%s)" % (x, y))
 
 
 # x = name(Int('x'), 'x')
-pp( ind(N, Int('x')) )
-pp( ind2(I, Int('y'), Int('z')) )
+# pp( ind(N, Int('x')) )
+# pp( ind2(I, Int('y'), Int('z')) )
+# pp( ind(N, Int('x')) )
+# pp( ind(I, Int('y'), ind(N, Int('x'))) )
+# pp(NOT(Int('z')))
+p, q = map(Int, "pq")
+# pp(IMP(IMP(p, q), q))
+pp(AND(p, q))
 pp(f)
 
 

@@ -39,3 +39,13 @@ def eval(m, x):
 		if mxi is None: 	return "?"
 		return mxi
 	return dmap(f, x)
+
+def ind(vec, *args, f, name=None):
+	var = Int(name or "%s%s" % (NAME(vec), list(args)))
+	def loop(val, *args2):
+		if len(args) == len(args2):
+			f.append(Implies(And(*[v == x for (v, x) in zip(args, args2)]), var == val))
+		else:
+			for i in range(len(val)): loop(val[i], *(list(args2)+[i]))
+	loop(vec)
+	return var
