@@ -2,27 +2,16 @@
 notes
 -----
 
+## indexing into an array with a variable int requires some magic:
+def ind(vec, i):
+	veci = Int("%s[%s]" % (NAME(vec), i))
+	for j in range(len(vec)): 
+		f.append(Implies(i == j, veci == vec[j]))
+	return veci
 
-I have to sort of manually Skolemize some things:
-	[ Implies(D[i], Not(D[N[i]])) for i in range(n) ]
-	becomes
-	[ Implies(D[i], Implies(N[i] == j, Not(D[i]))) for i in range(n) for j in range(n) ]
-
-
-
+- the real implementatino of ind handles arbitrary dimension matrices and non-variable indices
 
 TODO
 ----
 
-* crazy functions should return a tree of implications and ands, not a list
-- implement function for skolemizing meta-level functions (Implies, Not)
-	- even T and F should be used in this CPS way
-	- have a simple id-like build function to escape CPS
-
-* Need
-	- Versions of Lang-level ops that map ints to vars
-		! these can be complex without exploding variable count
-	- Versions of Lang-level ops that do CPS-style Term-building
-	- function to lift int to CPS
-	- function to build CPS to term
-	- Versions of Meta-level ops that do CPS-style Term-building
+- memoize indexing to reduce repeat formulas
