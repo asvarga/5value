@@ -20,8 +20,9 @@ TODO
 	- have a simple id-like build function to escape CPS
 
 * Need
-	- Versions of Obj-Lang ops that map ints to vars
+	- Versions of Lang-level ops that map ints to vars
 		! these can be complex without exploding variable count
-	- Versions of Obj-Lang ops that to CPS-style Term-building
+	- Versions of Lang-level ops that do CPS-style Term-building
 	- function to lift int to CPS
 	- function to build CPS to term
+	- Versions of Meta-level ops that do CPS-style Term-building
