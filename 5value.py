@@ -33,6 +33,8 @@ def NOT(p, name=None): return ind(N, p, fs=fs, name=name or "-%s" % p)
 def IMP(p, q, name=None): return ind(I, p, q, fs=fs, name=name or "(%s->%s)" % (p, q))
 def OR(p, q, name=None):  return IMP(IMP(p, q), q, name=name or "(%s||%s)" % (p, q))
 def AND(p, q, name=None): return NOT(OR(NOT(p), NOT(q)), name=name or "(%s&&%s)" % (p, q))
+# def AND(p, q, name=None): return NOT(IMP(p, NOT(q)), name=name or "(%s&&%s)" % (p, q))
+
 
 ### Formulas ###
 
@@ -44,31 +46,42 @@ fs += [ And(0 <= IMP(i, j), IMP(i, j) < n) for i in range(n) for j in range(n) ]
 fs += [ NOT(i) >= NOT(i+1) for i in range(n-1) ]
 fs.append(D[-1])
 
-# not true != true; not false == true
-fs += [ Xor(TRUE(i), TRUE(NOT(i))) for i in range(n) ]
-
-
-
+# not true isn't true
+fs += [ Implies(TRUE(i), FALSE(NOT(i))) for i in range(n) ]
+# not not true is true
+fs += [ Implies(TRUE(i), TRUE(NOT(NOT((i))))) for i in range(n) ]
 
 # |== (not not p) -> p
 fs += [ TRUE(IMP(NOT(NOT(i)), i)) for i in range(n) ]
 # |=/= p or (not p)
 fs.append(Not(And(*[ TRUE(OR(i, NOT(i))) for i in range(n) ])))
 # |=/= p -> (p and p)
-# fs.append(Not(And(*[ TRUE(IMP(i, AND(i, i))) for i in range(n) ])))
+fs.append(Not(And(*[ TRUE(IMP(i, AND(i, i))) for i in range(n) ])))
 
-
+# MP for atoms
+fs += [ Implies(And(TRUE(IMP(i, j)), TRUE(i)), TRUE(j)) for i in range(n) for j in range(n) ]
+# Cases for atoms
+fs += [ Implies(TRUE(OR(i, j)), TRUE(k)) == And(Implies(TRUE(i), TRUE(k)), Implies(TRUE(j), TRUE(k)))
+		for i in range(n) for j in range(n) for k in range(n) ]
+# Left Conj for atoms
+fs += [ Implies(And(TRUE(i), TRUE(j)), TRUE(k)) == Implies(TRUE(AND(i, j)), TRUE(k))
+		for i in range(n) for j in range(n) for k in range(n) ]
+# Right Conj for atoms
+fs += [ TRUE(AND(i, j)) == And(TRUE(i), TRUE(j)) for i in range(n) for j in range(5) ]
 
 ### Solve ###
 
 # pp(fs)
 pp("%s Formulas\n" % len(fs))
 
-for i, m in enumerate(get_models(fs, 5)):
+M = 50			# number of models to generate
+V = N + D 		# set of variables to avoid full repeats of
+
+for i, m in enumerate(get_models(fs, M, V)):
 	print("--- Model %s ---" % (i+1))
-	pp( eval(m, I) )
-	pp( eval(m, N) )
-	pp( eval(m, D) )
+	pp( meval(m, I) )
+	pp( meval(m, N) )
+	pp( meval(m, D) )
 	print()
 
 

@@ -36,6 +36,8 @@ def neg(p): return N[p]
 
 # f += [ Not(D[0]), D[-1] ]
 
+# not true != true; not false == true
+# fs += [ Xor(TRUE(i), TRUE(NOT(i))) for i in range(n) ]
 
 # not true != true
 f += [ Implies(true(i), FALSE(neg(i))) for i in range(n) ]
@@ -52,3 +54,41 @@ if s.check() == sat:
     print_matrix(M_D)
 else:
     print("failed to solve")
+
+
+
+
+
+
+
+# Return the first "M" models of formula list of formulas F 
+def get_models(F, M=math.inf):
+    result = []
+    s = Solver()
+    s.add(F)
+    while len(result) < M and s.check() == sat:
+        m = s.model()
+        result.append(m)
+        # Create a new constraint the blocks the current model
+        block = []
+        for d in m:
+            # d is a declaration
+            if d.arity() > 0:
+                raise Z3Exception("uninterpreted functions are not supported")
+            # create a constant from declaration
+            c = d()
+            if is_array(c) or c.sort().kind() == Z3_UNINTERPRETED_SORT:
+                raise Z3Exception("arrays and uninterpreted sorts are not supported")
+            block.append(c != m[d])
+        s.add(Or(block))
+    return result
+
+
+
+
+
+
+
+
+
+
