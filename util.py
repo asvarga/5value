@@ -93,6 +93,6 @@ def ind(mat, *inds, fs={}, name=None, Type=Int):
 	build(mat)
 	return var
 
-
+	
 
 
